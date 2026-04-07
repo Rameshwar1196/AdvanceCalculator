@@ -4,7 +4,7 @@ This project is a Node.js microservices-based calculator platform with:
 
 - A gateway service and web UI
 - A compute service for math, scientific, conversion, and age calculations
-- A history service backed by SQLite
+- A history service backed by SQLite (local) or PostgreSQL (production)
 
 ## Services
 
@@ -16,7 +16,7 @@ This project is a Node.js microservices-based calculator platform with:
 
 - services/gateway: Serves UI and proxies API calls to downstream services
 - services/compute: Handles arithmetic, scientific, trigonometry, conversions, and age calculations
-- services/history: Stores and returns calculation history using SQLite
+- services/history: Stores and returns calculation history using SQLite or PostgreSQL
 
 ## Requirements
 
@@ -68,7 +68,10 @@ Then open http://localhost:11000 in your browser.
 ### History
 
 - PORT (default: 13000)
+- HISTORY_DB_CLIENT (`sqlite` or `postgres`)
 - HISTORY_DB_PATH (default: services/history/history.db)
+- DATABASE_URL (required when `HISTORY_DB_CLIENT=postgres`)
+- PGSSL (`true`/`false`, optional; set to `true` for hosted PostgreSQL that requires SSL)
 
 ## API Endpoints
 
@@ -229,8 +232,22 @@ npm start
 
 Set ports via platform defaults or `PORT` env var.
 
-For history service, persistent SQLite files are not ideal on serverless/ephemeral disks.
-For production reliability, move to a managed database when possible.
+For production reliability, use managed PostgreSQL for history.
+The history service now supports this natively using `HISTORY_DB_CLIENT=postgres` and `DATABASE_URL`.
+
+### 2.1 Production Database Migration (Recommended)
+
+1. Provision a managed PostgreSQL database (Neon, Supabase, Railway, Render, etc.).
+2. Set `HISTORY_DB_CLIENT=postgres` on the history service.
+3. Set `DATABASE_URL` to your PostgreSQL connection string.
+4. If your provider requires SSL, set `PGSSL=true`.
+5. Restart/redeploy history service.
+
+The service auto-creates the `calculations` table at startup.
+Local development can continue to use SQLite with:
+
+- `HISTORY_DB_CLIENT=sqlite` (or unset)
+- `HISTORY_DB_PATH` (optional custom file path)
 
 ### 3. Deploy Frontend + API Gateway on Vercel
 
