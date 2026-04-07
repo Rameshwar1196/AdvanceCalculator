@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Calculator Tool</title>
+  <style>
+    :root {
+      --bg: #e9edf3;
+      --ink: #0f2447;
+      --muted: #52627c;
+      --card: #ffffff;
+      --line: #d7deea;
+      --blue: #2e64d2;
+      --blue-2: #1f53c3;
+      --green: #17b073;
+      --danger: #c62828;
+      --shadow: 0 8px 24px rgba(16, 33, 64, 0.08);
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .top {
+      background: linear-gradient(90deg, var(--blue), var(--blue-2));
+      color: #fff;
+      text-align: center;
+      padding: 14px 14px 10px;
+      border-top: 4px solid #2555be;
+    }
+
+    .top h1 {
+      margin: 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .top p {
+      margin: 6px 0 10px;
+      opacity: 0.95;
+      font-size: 0.93rem;
+    }
+
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .menu button {
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .menu button.active,
+    .menu button:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 16px auto;
+      padding: 0 14px 20px;
+    }
+
+    .welcome {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .welcome h2 {
+      margin: 0;
+      font-size: 1.9rem;
+    }
+
+    .welcome p {
+      margin: 8px auto 0;
+      color: var(--muted);
+      max-width: 960px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .group { margin-bottom: 18px; }
+
+    .group h3 {
+      margin: 0 0 10px;
+      font-size: 1.55rem;
+      border-left: 4px solid var(--blue);
+      padding-left: 8px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      min-height: 122px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.18s ease;
+    }
+
+    .card:hover { transform: translateY(-2px); }
+
+    .card .icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 99px;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      background: #eef3ff;
+      color: #2f59b8;
+      font-weight: 700;
+    }
+
+    .card[data-color="blue"] { border-left: 5px solid #2e64d2; background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%); }
+    .card[data-color="blue"] .icon { background: #dde9ff; color: #2e64d2; }
+    .card[data-color="blue"] .title { color: #1f3a7f; }
+
+    .card[data-color="purple"] { border-left: 5px solid #7c3aed; background: linear-gradient(135deg, #f3e8ff 0%, #ffffff 100%); }
+    .card[data-color="purple"] .icon { background: #e9d5ff; color: #7c3aed; }
+    .card[data-color="purple"] .title { color: #5b21b6; }
+
+    .card[data-color="indigo"] { border-left: 5px solid #4f46e5; background: linear-gradient(135deg, #eef2ff 0%, #ffffff 100%); }
+    .card[data-color="indigo"] .icon { background: #e0e7ff; color: #4f46e5; }
+    .card[data-color="indigo"] .title { color: #312e81; }
+
+    .card[data-color="cyan"] { border-left: 5px solid #06b6d4; background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%); }
+    .card[data-color="cyan"] .icon { background: #cffafe; color: #06b6d4; }
+    .card[data-color="cyan"] .title { color: #164e63; }
+
+    .card[data-color="teal"] { border-left: 5px solid #14b8a6; background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%); }
+    .card[data-color="teal"] .icon { background: #ccfbf1; color: #14b8a6; }
+    .card[data-color="teal"] .title { color: #134e4a; }
+
+    .card[data-color="green"] { border-left: 5px solid #17b073; background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%); }
+    .card[data-color="green"] .icon { background: #dcfce7; color: #17b073; }
+    .card[data-color="green"] .title { color: #166534; }
+
+    .card[data-color="orange"] { border-left: 5px solid #f97316; background: linear-gradient(135deg, #fff7ed 0%, #ffffff 100%); }
+    .card[data-color="orange"] .icon { background: #fed7aa; color: #f97316; }
+    .card[data-color="orange"] .title { color: #92400e; }
+
+    .card[data-color="amber"] { border-left: 5px solid #f59e0b; background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%); }
+    .card[data-color="amber"] .icon { background: #fef3c7; color: #f59e0b; }
+    .card[data-color="amber"] .title { color: #92400e; }
+
+    .card[data-color="rose"] { border-left: 5px solid #f43f5e; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); }
+    .card[data-color="rose"] .icon { background: #fbcfe8; color: #f43f5e; }
+    .card[data-color="rose"] .title { color: #831843; }
+
+    .card[data-color="pink"] { border-left: 5px solid #ec4899; background: linear-gradient(135deg, #fdf2f8 0%, #ffffff 100%); }
+    .card[data-color="pink"] .icon { background: #fbcfe8; color: #ec4899; }
+    .card[data-color="pink"] .title { color: #831843; }
+
+    .card[data-color="red"] { border-left: 5px solid #dc2626; background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%); }
+    .card[data-color="red"] .icon { background: #fecaca; color: #dc2626; }
+    .card[data-color="red"] .title { color: #7f1d1d; }
+
+    .card .title {
+      font-weight: 700;
+      font-size: 0.98rem;
+    }
+
+    .card .text {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .detail {
+      display: none;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .detail.active { display: block; }
+
+    .detail-head {
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      color: #fff;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .detail-head-copy {
+      min-width: 0;
+    }
+
+    .detail-head h3 {
+      margin: 0;
+      font-size: 1.55rem;
+    }
+
+    .detail-head p {
+      margin: 6px 0 0;
+      opacity: 0.95;
+      font-size: 0.93rem;
+    }
+
+    .back-top {
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .back-top:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    .detail-body { padding: 14px; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .info-box {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .info-box h4 {
+      margin: 0;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      color: #fff;
+      padding: 8px 10px;
+      font-size: 0.95rem;
+    }
+
+    .info-box .content {
+      padding: 10px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .info-box ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .form {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: #fbfcff;
+    }
+
+    .form-colorful {
+      border: 0;
+      border-radius: 12px;
+      padding: 20px;
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border-left: 5px solid #2e64d2;
+    }
+
+    .form-colorful .fields {
+      margin-bottom: 15px;
+    }
+
+    .form-colorful .field label {
+      color: #1a3a6e;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .form-colorful input,
+    .form-colorful select {
+      border: 2px solid #d0d9e8;
+      background: #f7f9fd;
+      color: #0f2447;
+    }
+
+    .form-colorful input::placeholder {
+      color: #a0aec0;
+    }
+
+    .form-colorful input:focus,
+    .form-colorful select:focus {
+      border-color: #2e64d2;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(46, 100, 210, 0.1);
+    }
+
+    .form-colorful .action {
+      background: linear-gradient(90deg, #2e64d2, #17b073);
+      margin-top: 10px;
+      font-size: 1.05rem;
+      padding: 14px 20px;
+      box-shadow: 0 4px 12px rgba(46, 100, 210, 0.25);
+    }
+
+    .form-colorful .action:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(46, 100, 210, 0.35);
+    }
+
+    .form-colorful .result {
+      background: linear-gradient(90deg, #eef3ff, #e6fff5);
+      border: 2px solid #c3d4f8;
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #1a3a6e;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+
+    .form-colorful .error {
+      color: #c62828;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+
+    .form-colorful small {
+      display: block;
+      font-size: 0.75rem;
+      color: #6b7fa3;
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    .fields {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .field label {
+      font-size: 0.84rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      border: 2px solid #d0d9e8;
+      border-radius: 8px;
+      padding: 11px 13px;
+      font-size: 0.95rem;
+      background: #fff;
+      transition: all 0.2s ease;
+      color: var(--ink);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(46, 100, 210, 0.1);
+    }
+
+    input::placeholder {
+      color: #999;
+    }
+
+    .action {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 18px;
+      background: linear-gradient(90deg, var(--blue), var(--blue-2));
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(46, 100, 210, 0.3);
+    }
+
+    .action:active {
+      transform: translateY(0);
+    }
+
+    .result {
+      margin-top: 10px;
+      border: 1px solid #d7e0f3;
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+      font-weight: 700;
+      color: #16315c;
+    }
+
+    .error {
+      margin-top: 7px;
+      min-height: 18px;
+      color: var(--danger);
+      font-size: 0.87rem;
+      font-weight: 600;
+    }
+
+    .back {
+      margin-bottom: 10px;
+      border: 1px solid #b8c7e4;
+      background: #f2f6ff;
+      color: #1d458c;
+      border-radius: 8px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1050px) {
+      .card-grid { grid-template-columns: repeat(2, minmax(180px, 1fr)); }
+      .fields { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+    }
+
+    @media (max-width: 680px) {
+      .card-grid { grid-template-columns: 1fr; }
+      .fields, .info-grid { grid-template-columns: 1fr; }
+      .top h1 { font-size: 1.5rem; }
+      .welcome h2 { font-size: 1.4rem; }
+      .detail-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .back-top {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>Advanced Calculator Tool</h1>
+    <p>Free calculators for EMI, GST, SIP, Tax, BMI, Age, Gold, Fuel, Percentage, Discount, and unit conversions.</p>
+    <nav class="menu" id="menu"></nav>
+  </header>
+
+  <main class="wrap">
+    <section id="homeView">
+      <div class="welcome">
+        <h2>Welcome to Advanced Calculator Tool</h2>
+        <p>
+          Discover simple and accurate calculators for financial planning, health checks, and day-to-day math.
+          Click any card below to open detailed calculator prompt view in the same screen.
+        </p>
+      </div>
+
+      <div class="group">
+        <h3>Financial Calculators</h3>
+        <div class="card-grid" id="financialGrid"></div>
+      </div>
+
+      <div class="group">
+        <h3>Health & Lifestyle</h3>
+        <div class="card-grid" id="healthGrid"></div>
+      </div>
+
+      <div class="group">
+        <h3>Daily Use Calculators</h3>
+        <div class="card-grid" id="dailyGrid"></div>
+      </div>
+    </section>
+
+    <section id="detailView" class="detail">
+      <div class="detail-head">
+        <div class="detail-head-copy">
+          <h3 id="detailTitle">Calculator</h3>
+          <p id="detailSub">Description</p>
+        </div>
+        <button class="back-top" id="backTopBtn" type="button">Back to Home</button>
+      </div>
+      <div class="detail-body">
+        <button class="back" id="backBtn">Back to Home</button>
+
+        <div class="info-grid">
+          <article class="info-box">
+            <h4>What Is This?</h4>
+            <div class="content" id="whatIsText"></div>
+          </article>
+          <article class="info-box">
+            <h4>Benefits</h4>
+            <div class="content"><ul id="benefitsList"></ul></div>
+          </article>
+        </div>
+
+        <div class="form" id="toolForm"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const tools = {
+      emi: {
+        group: "financial",
+        color: "blue",
+        icon: "💰",
+        title: "EMI Calculator",
+        short: "Calculate loan EMI, total interest, and payment schedule.",
+        subtitle: "Calculate your monthly loan payment",
+        what: "EMI is the fixed monthly payment toward principal and interest for a loan tenure.",
+        benefits: ["Budget planning", "Loan comparison", "Interest visibility"],
+        render: () => {
+          return `
+            <div class="form-colorful">
+              <div class="fields">
+                <div class="field"><label>Loan Amount</label><input id="emiAmount" type="number" placeholder="Enter loan amount" /><div><small>Enter loan amount in rupees</small></div></div>
+                <div class="field"><label>Annual Interest (%)</label><input id="emiRate" type="number" step="0.01" placeholder="Enter interest rate" /><div><small>Interest rate per annum</small></div></div>
+                <div class="field"><label>Tenure (Years)</label><input id="emiYears" type="number" step="0.1" placeholder="Enter tenure" /><div><small>Loan tenure in years</small></div></div>
+              </div>
+              <button class="action" id="emiBtn">Calculate EMI</button>
+              <div class="result" id="emiResult">Result: -</div>
+              <div class="error" id="emiError"></div>
+            </div>
+          `;
+        },
+        bind: () => {
+          byId("emiBtn").onclick = () => {
+            clearError("emiError");
+            const p = num("emiAmount");
+            const annual = num("emiRate");
+            const years = num("emiYears");
+            if (!(p > 0) || !(annual > 0) || !(years > 0)) return setError("emiError", "Enter valid values.");
+            const r = annual / 12 / 100;
+            const n = years * 12;
+            const emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            const total = emi * n;
+            const interest = total - p;
+            byId("emiResult").textContent = `EMI: ${money(emi)} | Total: ${money(total)} | Interest: ${money(interest)}`;
+          };
+        }
+      },
+      gst: {
+        group: "financial",
+        color: "purple",
+        icon: "📊",
+        title: "GST Calculator",
+        short: "Calculate GST inclusive/exclusive amounts and tax breakup.",
+        subtitle: "Quick GST add/remove calculation",
+        what: "Use amount and GST rate to calculate inclusive total or extract base from inclusive value.",
+        benefits: ["Fast invoice prep", "Accurate tax split", "Less manual error"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Amount</label><input id="gstAmount" type="number" placeholder="Enter amount" /><div><small>Enter amount value</small></div></div>
+              <div class="field"><label>Rate (%)</label><input id="gstRate" type="number" value="18" step="0.01" placeholder="Enter GST rate" /><div><small>GST rate percentage</small></div></div>
+              <div class="field"><label>Mode</label><select id="gstMode"><option value="exclusive">Add GST</option><option value="inclusive">Remove GST</option></select><div><small>Add or remove GST</small></div></div>
+            </div>
+            <button class="action" id="gstBtn">Calculate GST</button>
+            <div class="result" id="gstResult">Result: -</div>
+            <div class="error" id="gstError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("gstBtn").onclick = () => {
+            clearError("gstError");
+            const amt = num("gstAmount");
+            const rate = num("gstRate");
+            const mode = byId("gstMode").value;
+            if (!(amt >= 0) || !(rate >= 0)) return setError("gstError", "Enter valid values.");
+            if (mode === "exclusive") {
+              const gst = (amt * rate) / 100;
+              byId("gstResult").textContent = `GST: ${money(gst)} | Total: ${money(amt + gst)}`;
+            } else {
+              const base = amt / (1 + rate / 100);
+              const gst = amt - base;
+              byId("gstResult").textContent = `Base: ${money(base)} | GST: ${money(gst)}`;
+            }
+          };
+        }
+      },
+      sip: {
+        group: "financial",
+        color: "indigo",
+        icon: "📈",
+        title: "SIP Calculator",
+        short: "Plan your investments and calculate returns.",
+        subtitle: "Estimate SIP future value",
+        what: "SIP returns are computed with monthly compounding over investment period.",
+        benefits: ["Goal planning", "Return estimate", "Investment discipline"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Monthly Investment</label><input id="sipMonthly" type="number" placeholder="Enter monthly amount" /><div><small>Monthly SIP amount</small></div></div>
+              <div class="field"><label>Expected Return (%)</label><input id="sipRate" type="number" step="0.01" placeholder="Enter expected return" /><div><small>Annual return percentage</small></div></div>
+              <div class="field"><label>Years</label><input id="sipYears" type="number" step="0.1" placeholder="Enter investment years" /><div><small>Investment period</small></div></div>
+            </div>
+            <button class="action" id="sipBtn">Calculate SIP</button>
+            <div class="result" id="sipResult">Result: -</div>
+            <div class="error" id="sipError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("sipBtn").onclick = () => {
+            clearError("sipError");
+            const m = num("sipMonthly");
+            const r = num("sipRate") / 12 / 100;
+            const n = num("sipYears") * 12;
+            if (!(m > 0) || !(r > 0) || !(n > 0)) return setError("sipError", "Enter valid values.");
+            const fv = m * ((Math.pow(1 + r, n) - 1) / r) * (1 + r);
+            const inv = m * n;
+            byId("sipResult").textContent = `Future Value: ${money(fv)} | Invested: ${money(inv)} | Gain: ${money(fv - inv)}`;
+          };
+        }
+      },
+      tax: {
+        group: "financial",
+        color: "cyan",
+        icon: "🧾",
+        title: "Income Tax Calculator",
+        short: "Calculate income tax for old and new regime.",
+        subtitle: "Quick annual tax estimate",
+        what: "This calculator provides slab-based tax estimate with cess.",
+        benefits: ["Regime comparison", "Deduction planning", "Annual estimate"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Annual Income</label><input id="taxIncome" type="number" placeholder="Enter annual income" /><div><small>Enter annual income</small></div></div>
+              <div class="field"><label>Regime</label><select id="taxRegime"><option value="new">New</option><option value="old">Old</option></select><div><small>Tax regime</small></div></div>
+              <div class="field"><label>Deduction</label><input id="taxDeduction" type="number" value="50000" placeholder="Enter deduction" /><div><small>Standard deduction</small></div></div>
+            </div>
+            <button class="action" id="taxBtn">Calculate Tax</button>
+            <div class="result" id="taxResult">Result: -</div>
+            <div class="error" id="taxError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("taxBtn").onclick = () => {
+            clearError("taxError");
+            const income = num("taxIncome");
+            const deduction = num("taxDeduction");
+            const regime = byId("taxRegime").value;
+            if (!(income > 0) || deduction < 0) return setError("taxError", "Enter valid values.");
+            const taxable = Math.max(0, income - deduction);
+            const slabs = regime === "new"
+              ? [[300000,0],[700000,0.05],[1000000,0.1],[1200000,0.15],[1500000,0.2],[Number.MAX_SAFE_INTEGER,0.3]]
+              : [[250000,0],[500000,0.05],[1000000,0.2],[Number.MAX_SAFE_INTEGER,0.3]];
+            let t = 0;
+            let prev = 0;
+            slabs.forEach((s) => {
+              const take = Math.max(0, Math.min(taxable, s[0]) - prev);
+              t += take * s[1];
+              prev = s[0];
+            });
+            t *= 1.04;
+            byId("taxResult").textContent = `Taxable: ${money(taxable)} | Tax: ${money(t)}`;
+          };
+        }
+      },
+      bmi: {
+        group: "health",
+        color: "teal",
+        icon: "⚖️",
+        title: "BMI Calculator",
+        short: "Check your Body Mass Index and health status.",
+        subtitle: "Know your BMI category",
+        what: "BMI uses weight and height to classify underweight, normal, overweight, or obese range.",
+        benefits: ["Quick health indicator", "Progress tracking", "Simple formula"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Weight (kg)</label><input id="bmiWeight" type="number" step="0.1" placeholder="Enter your weight" /><div><small>Your weight</small></div></div>
+              <div class="field"><label>Height (cm)</label><input id="bmiHeight" type="number" step="0.1" placeholder="Enter your height" /><div><small>Your height</small></div></div>
+            </div>
+            <button class="action" id="bmiBtn">Calculate BMI</button>
+            <div class="result" id="bmiResult">Result: -</div>
+            <div class="error" id="bmiError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("bmiBtn").onclick = () => {
+            clearError("bmiError");
+            const kg = num("bmiWeight");
+            const cm = num("bmiHeight");
+            if (!(kg > 0) || !(cm > 0)) return setError("bmiError", "Enter valid values.");
+            const m = cm / 100;
+            const bmi = kg / (m * m);
+            let c = "Normal";
+            if (bmi < 18.5) c = "Underweight";
+            else if (bmi >= 25 && bmi < 30) c = "Overweight";
+            else if (bmi >= 30) c = "Obese";
+            byId("bmiResult").textContent = `BMI: ${bmi.toFixed(2)} | Category: ${c}`;
+          };
+        }
+      },
+      age: {
+        group: "health",
+        color: "green",
+        icon: "🎂",
+        title: "Age Calculator",
+        short: "Calculate exact age between two dates.",
+        subtitle: "Calculate age and days",
+        what: "Age is calculated from birth date to current/as-of date in years, months, and days.",
+        benefits: ["Exact age output", "Total days", "Useful for forms"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Birth Date</label><input id="ageBirth" type="date" /></div>
+            </div>
+            <button class="action" id="ageBtn">Calculate Age</button>
+            <div class="result" id="ageResult">Result: -</div>
+            <div class="error" id="ageError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("ageBtn").onclick = async () => {
+            clearError("ageError");
+            const birthDate = byId("ageBirth").value;
+            if (!birthDate) return setError("ageError", "Select birth date.");
+            try {
+              const res = await fetch("/api/age-calculator", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ birthDate })
+              });
+              const data = await res.json();
+              if (!res.ok) return setError("ageError", data.error || "Unable to calculate age.");
+              byId("ageResult").textContent = `${data.formatted} | Days: ${data.totalDays}`;
+            } catch (err) {
+              setError("ageError", "Age service unavailable.");
+            }
+          };
+        }
+      },
+      gold: {
+        group: "daily",
+        color: "amber",
+        icon: "✨",
+        title: "Gold Calculator",
+        short: "Calculate gold value for different purities.",
+        subtitle: "Estimate purity-based gold value",
+        what: "Gold value is estimated using 24K rate, purity percentage, and weight.",
+        benefits: ["Quick value estimate", "Purity comparison", "Buying support"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Weight (g)</label><input id="goldWeight" type="number" step="0.01" placeholder="Enter gold weight" /><div><small>Gold weight</small></div></div>
+              <div class="field"><label>24K Rate per gram</label><input id="goldRate" type="number" step="0.01" placeholder="Enter rate per gram" /><div><small>Per gram rate</small></div></div>
+              <div class="field"><label>Purity</label><select id="goldPurity"><option value="99.9">24K</option><option value="91.6">22K</option><option value="75">18K</option></select><div><small>Gold purity</small></div></div>
+            </div>
+            <button class="action" id="goldBtn">Calculate Gold Value</button>
+            <div class="result" id="goldResult">Result: -</div>
+            <div class="error" id="goldError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("goldBtn").onclick = () => {
+            clearError("goldError");
+            const w = num("goldWeight");
+            const r = num("goldRate");
+            const p = num("goldPurity");
+            if (!(w > 0) || !(r > 0) || !(p > 0)) return setError("goldError", "Enter valid values.");
+            byId("goldResult").textContent = `Estimated value: ${money(w * r * (p / 100))}`;
+          };
+        }
+      },
+      fuel: {
+        group: "daily",
+        color: "orange",
+        icon: "⛽",
+        title: "Fuel Calculator",
+        short: "Calculate fuel costs and consumption.",
+        subtitle: "Trip fuel cost estimate",
+        what: "Fuel liters are computed from distance and mileage, then multiplied by fuel price.",
+        benefits: ["Trip planning", "Budget estimate", "Mileage comparison"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Distance (km)</label><input id="fuelDistance" type="number" placeholder="Enter distance" /><div><small>Trip distance</small></div></div>
+              <div class="field"><label>Mileage (km/l)</label><input id="fuelMileage" type="number" step="0.1" placeholder="Enter mileage" /><div><small>Vehicle mileage</small></div></div>
+              <div class="field"><label>Fuel Price/liter</label><input id="fuelPrice" type="number" step="0.01" placeholder="Enter price per liter" /><div><small>Price per liter</small></div></div>
+            </div>
+            <button class="action" id="fuelBtn">Calculate Fuel Cost</button>
+            <div class="result" id="fuelResult">Result: -</div>
+            <div class="error" id="fuelError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("fuelBtn").onclick = () => {
+            clearError("fuelError");
+            const d = num("fuelDistance");
+            const m = num("fuelMileage");
+            const p = num("fuelPrice");
+            if (!(d > 0) || !(m > 0) || !(p > 0)) return setError("fuelError", "Enter valid values.");
+            const liters = d / m;
+            byId("fuelResult").textContent = `Fuel needed: ${liters.toFixed(2)} L | Cost: ${money(liters * p)}`;
+          };
+        }
+      },
+      percentage: {
+        group: "daily",
+        color: "blue",
+        icon: "%",
+        title: "Percentage Calculator",
+        short: "Calculate percentages, changes, and ratios.",
+        subtitle: "Percentage operations",
+        what: "Calculate X% of Y, increase by %, or decrease by % with a single form.",
+        benefits: ["Fast percent math", "Multiple modes", "Everyday utility"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Mode</label><select id="pctMode"><option value="of">X% of Y</option><option value="inc">Increase Y by X%</option><option value="dec">Decrease Y by X%</option></select><div><small>Calculation mode</small></div></div>
+              <div class="field"><label>X</label><input id="pctX" type="number" step="0.01" placeholder="Enter percentage" /><div><small>Percentage value</small></div></div>
+              <div class="field"><label>Y</label><input id="pctY" type="number" step="0.01" placeholder="Enter base value" /><div><small>Base value</small></div></div>
+            </div>
+            <button class="action" id="pctBtn">Calculate Percentage</button>
+            <div class="result" id="pctResult">Result: -</div>
+            <div class="error" id="pctError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("pctBtn").onclick = () => {
+            clearError("pctError");
+            const mode = byId("pctMode").value;
+            const x = num("pctX");
+            const y = num("pctY");
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return setError("pctError", "Enter valid values.");
+            let out = 0;
+            if (mode === "of") out = (x / 100) * y;
+            if (mode === "inc") out = y * (1 + x / 100);
+            if (mode === "dec") out = y * (1 - x / 100);
+            byId("pctResult").textContent = `Result: ${out.toFixed(2)}`;
+          };
+        }
+      },
+      discount: {
+        group: "daily",
+        color: "rose",
+        icon: "🏷️",
+        title: "Discount Calculator",
+        short: "Calculate discounts and final prices.",
+        subtitle: "Price after discount",
+        what: "Find savings and final price by applying discount percentage to original amount.",
+        benefits: ["Deal comparison", "Savings clarity", "Shopping helper"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Original Price</label><input id="discOriginal" type="number" step="0.01" placeholder="Enter original price" /><div><small>Marked price</small></div></div>
+              <div class="field"><label>Discount (%)</label><input id="discPercent" type="number" step="0.01" placeholder="Enter discount %" /><div><small>Discount percentage</small></div></div>
+            </div>
+            <button class="action" id="discBtn">Calculate Discount</button>
+            <div class="result" id="discResult">Result: -</div>
+            <div class="error" id="discError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("discBtn").onclick = () => {
+            clearError("discError");
+            const original = num("discOriginal");
+            const pct = num("discPercent");
+            if (!(original >= 0) || !(pct >= 0)) return setError("discError", "Enter valid values.");
+            const save = (original * pct) / 100;
+            byId("discResult").textContent = `Save: ${money(save)} | Final: ${money(original - save)}`;
+          };
+        }
+      },
+      temp: {
+        group: "daily",
+        color: "red",
+        icon: "🌡️",
+        title: "Temperature Converter",
+        short: "Convert degree Celsius/Fahrenheit/Kelvin and vice versa.",
+        subtitle: "Temperature unit conversion",
+        what: "Convert between Celsius, Fahrenheit, and Kelvin with common aliases supported.",
+        benefits: ["Bidirectional conversion", "Alias-friendly", "Quick science/weather use"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Value</label><input id="tempValue" type="number" step="0.01" placeholder="Enter temperature" /><div><small>Temperature value</small></div></div>
+              <div class="field"><label>From</label><select id="tempFrom"><option value="celsius">Celsius</option><option value="fahrenheit">Fahrenheit</option><option value="kelvin">Kelvin</option></select><div><small>Source unit</small></div></div>
+              <div class="field"><label>To</label><select id="tempTo"><option value="fahrenheit">Fahrenheit</option><option value="celsius">Celsius</option><option value="kelvin">Kelvin</option></select><div><small>Target unit</small></div></div>
+            </div>
+            <button class="action" id="tempBtn">Convert Temperature</button>
+            <div class="result" id="tempResult">Result: -</div>
+            <div class="error" id="tempError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("tempBtn").onclick = async () => {
+            clearError("tempError");
+            const value = num("tempValue");
+            const fromUnit = byId("tempFrom").value;
+            const toUnit = byId("tempTo").value;
+            if (!Number.isFinite(value)) return setError("tempError", "Enter valid value.");
+            try {
+              const res = await fetch("/api/convert/temperature", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value, fromUnit, toUnit })
+              });
+              const data = await res.json();
+              if (!res.ok) return setError("tempError", data.error || "Conversion failed.");
+              byId("tempResult").textContent = `Converted: ${data.result} ${data.toUnit}`;
+            } catch (err) {
+              setError("tempError", "Temperature service unavailable.");
+            }
+          };
+        }
+      },
+      length: {
+        group: "daily",
+        color: "purple",
+        icon: "📏",
+        title: "Length Converter",
+        short: "Convert mm, cm, dm, dam, hm, km and vice versa.",
+        subtitle: "Metric and imperial length conversion",
+        what: "Supports full metric ladder and common imperial units in both directions.",
+        benefits: ["mm to km ladder", "Imperial support", "Precise output"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Value</label><input id="lenValue" type="number" step="0.01" placeholder="Enter length value" /><div><small>Enter length</small></div></div>
+              <div class="field"><label>From</label><select id="lenFrom"><option value="mm">mm</option><option value="cm">cm</option><option value="dm">dm</option><option value="m">m</option><option value="dam">dam</option><option value="hm">hm</option><option value="km">km</option><option value="inch">inch</option><option value="foot">foot</option><option value="yard">yard</option><option value="mile">mile</option></select><div><small>Source unit</small></div></div>
+              <div class="field"><label>To</label><select id="lenTo"><option value="km">km</option><option value="hm">hm</option><option value="dam">dam</option><option value="m">m</option><option value="dm">dm</option><option value="cm">cm</option><option value="mm">mm</option><option value="mile">mile</option><option value="yard">yard</option><option value="foot">foot</option><option value="inch">inch</option></select><div><small>Target unit</small></div></div>
+            </div>
+            <button class="action" id="lenBtn">Convert Length</button>
+            <div class="result" id="lenResult">Result: -</div>
+            <div class="error" id="lenError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("lenBtn").onclick = async () => {
+            clearError("lenError");
+            const value = num("lenValue");
+            const fromUnit = byId("lenFrom").value;
+            const toUnit = byId("lenTo").value;
+            if (!Number.isFinite(value)) return setError("lenError", "Enter valid value.");
+            try {
+              const res = await fetch("/api/convert/length", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value, fromUnit, toUnit })
+              });
+              const data = await res.json();
+              if (!res.ok) return setError("lenError", data.error || "Conversion failed.");
+              byId("lenResult").textContent = `Converted: ${data.result} ${data.toUnit}`;
+            } catch (err) {
+              setError("lenError", "Length service unavailable.");
+            }
+          };
+        }
+      },
+      trig: {
+        group: "daily",
+        color: "pink",
+        icon: "📐",
+        title: "Trigonometry Calculator",
+        short: "Compute sin, cos, tan and their inverses.",
+        subtitle: "Trigonometric function evaluator",
+        what: "Enter an angle (or value for inverse) and choose the function. Supports degrees and radians mode.",
+        benefits: ["sin, cos, tan support", "Inverse functions (asin, acos, atan)", "Degrees and radians"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field">
+                <label>Enter Value or Angle</label>
+                <input id="trigValue" type="number" step="0.0001" placeholder="Enter angle or value" />
+              </div>
+              <div class="field">
+                <label>Select Trigonometric Function</label>
+                <select id="trigOp">
+                  <option value="sin">sin</option>
+                  <option value="cos">cos</option>
+                  <option value="tan">tan</option>
+                  <option value="asin">asin (inverse)</option>
+                  <option value="acos">acos (inverse)</option>
+                  <option value="atan">atan (inverse)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Select Angle Mode</label>
+                <select id="trigMode">
+                  <option value="degrees">Degrees</option>
+                  <option value="radians">Radians</option>
+                </select>
+              </div>
+            </div>
+            <button class="action" id="trigBtn">Calculate Trigonometry</button>
+            <div class="result" id="trigResult">Result: -</div>
+            <div class="error" id="trigError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("trigBtn").onclick = async () => {
+            clearError("trigError");
+            const value = num("trigValue");
+            if (!Number.isFinite(value)) return setError("trigError", "Enter a valid number.");
+            const operation = byId("trigOp").value;
+            const angleMode = byId("trigMode").value;
+            try {
+              const res = await fetch("/api/trigonometry", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value, operation, angleMode })
+              });
+              const data = await res.json();
+              if (!res.ok) return setError("trigError", data.error || "Calculation failed.");
+              byId("trigResult").textContent = `${data.operation}(${data.value}) = ${data.result}`;
+            } catch (err) {
+              setError("trigError", "Trigonometry service unavailable.");
+            }
+          };
+        }
+      },
+      weight: {
+        group: "daily",
+        color: "teal",
+        icon: "⚖",
+        title: "Weight Converter",
+        short: "Convert metric and weight units and vice versa.",
+        subtitle: "Weight/mass conversion",
+        what: "Convert from microgram to tonne and to imperial units like oz, lb, and stone.",
+        benefits: ["Wide unit support", "Fast conversion", "Useful in daily and technical use"],
+        render: () => `
+          <div class="form-colorful">
+            <div class="fields">
+              <div class="field"><label>Value</label><input id="wtValue" type="number" step="0.01" placeholder="Enter weight value" /><div><small>Enter weight</small></div></div>
+              <div class="field"><label>From</label><select id="wtFrom"><option value="ug">ug</option><option value="mg">mg</option><option value="cg">cg</option><option value="dg">dg</option><option value="g">g</option><option value="dag">dag</option><option value="hg">hg</option><option value="kg">kg</option><option value="tonne">tonne</option><option value="oz">oz</option><option value="lb">lb</option><option value="stone">stone</option></select><div><small>Source unit</small></div></div>
+              <div class="field"><label>To</label><select id="wtTo"><option value="tonne">tonne</option><option value="kg">kg</option><option value="hg">hg</option><option value="dag">dag</option><option value="g">g</option><option value="dg">dg</option><option value="cg">cg</option><option value="mg">mg</option><option value="ug">ug</option><option value="stone">stone</option><option value="lb">lb</option><option value="oz">oz</option></select><div><small>Target unit</small></div></div>
+            </div>
+            <button class="action" id="wtBtn">Convert Weight</button>
+            <div class="result" id="wtResult">Result: -</div>
+            <div class="error" id="wtError"></div>
+          </div>
+        `,
+        bind: () => {
+          byId("wtBtn").onclick = async () => {
+            clearError("wtError");
+            const value = num("wtValue");
+            const fromUnit = byId("wtFrom").value;
+            const toUnit = byId("wtTo").value;
+            if (!Number.isFinite(value)) return setError("wtError", "Enter valid value.");
+            try {
+              const res = await fetch("/api/convert/weight", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ value, fromUnit, toUnit })
+              });
+              const data = await res.json();
+              if (!res.ok) return setError("wtError", data.error || "Conversion failed.");
+              byId("wtResult").textContent = `Converted: ${data.result} ${data.toUnit}`;
+            } catch (err) {
+              setError("wtError", "Weight service unavailable.");
+            }
+          };
+        }
+      }
+    };
+
+    const order = ["emi", "gst", "sip", "tax", "bmi", "age", "percentage", "gold", "fuel", "discount", "temp", "length", "weight", "trig"];
+
+    function byId(id) { return document.getElementById(id); }
+    function num(id) { return Number(byId(id).value); }
+    function clearError(id) { byId(id).textContent = ""; }
+    function setError(id, msg) { byId(id).textContent = msg; }
+    function money(v) { return new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 }).format(v); }
+
+    function toolButton(key) {
+      const b = document.createElement("button");
+      b.textContent = tools[key].title.replace(" Calculator", "");
+      b.onclick = () => openTool(key);
+      return b;
+    }
+
+    function toolCard(key) {
+      const t = tools[key];
+      const el = document.createElement("article");
+      el.className = "card";
+      el.setAttribute("data-color", t.color || "blue");
+      el.innerHTML = `<div class='icon'>${t.icon}</div><div class='title'>${t.title}</div><div class='text'>${t.short}</div>`;
+      el.onclick = () => openTool(key);
+      return el;
+    }
+
+    function fillHome() {
+      const menu = byId("menu");
+      order.forEach((k) => menu.appendChild(toolButton(k)));
+
+      const financial = ["emi", "gst", "sip", "tax"];
+      const health = ["bmi", "age"];
+      const daily = ["percentage", "gold", "fuel", "discount", "temp", "length", "weight"];
+
+      financial.forEach((k) => byId("financialGrid").appendChild(toolCard(k)));
+      health.forEach((k) => byId("healthGrid").appendChild(toolCard(k)));
+      daily.forEach((k) => byId("dailyGrid").appendChild(toolCard(k)));
+    }
+
+    function openTool(key) {
+      const t = tools[key];
+      if (!t) return;
+      byId("homeView").style.display = "none";
+      byId("detailView").classList.add("active");
+      byId("detailTitle").textContent = t.title + " - Advanced Calculator Tool";
+      byId("detailSub").textContent = t.subtitle;
+      byId("whatIsText").textContent = t.what;
+      byId("benefitsList").innerHTML = t.benefits.map((x) => `<li>${x}</li>`).join("");
+      byId("toolForm").innerHTML = t.render();
+      t.bind();
+
+      document.querySelectorAll(".menu button").forEach((btn) => {
+        btn.classList.toggle("active", btn.textContent === t.title.replace(" Calculator", ""));
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goHome() {
+      byId("detailView").classList.remove("active");
+      byId("homeView").style.display = "block";
+      document.querySelectorAll(".menu button").forEach((b) => b.classList.remove("active"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    byId("backBtn").onclick = goHome;
+    byId("backTopBtn").onclick = goHome;
+
+    fillHome();
+  </script>
+</body>
+</html>

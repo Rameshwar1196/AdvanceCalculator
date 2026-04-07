@@ -1,0 +1,64 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/emi",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/gst",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/sip",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/tax",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/bmi",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/age",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/temp",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/length",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/weight",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/gold",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/fuel",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/percentage",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/discount",
+      "destination": "/services/gateway/public/index.html"
+    },
+    {
+      "source": "/trig",
+      "destination": "/services/gateway/public/index.html"
+    }
+  ]
+}
